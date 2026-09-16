@@ -8,7 +8,7 @@ process_quit() {
     exit 1
   fi
 
-  printf "$(printf '\\x80\\x00')" >> "$output_file"
+  printf "$(printf '\\x20\\x00')" >> "$output_file"
 }
 # the function to do the instruction "load"
 process_load() {
@@ -26,7 +26,7 @@ process_load() {
   fi
   # bitwise operations for addition
   local load_value byte1 byte2
-  (( load_value = ( 0 << 10 ) | ( register << 8 ) | value ))
+  (( load_value = ( 1 << 10 ) | ( register << 8 ) | value ))
   (( byte1 = ( load_value >> 8 ) & 0xFF ))
   (( byte2 = ( load_value & 0xFF )))
   printf "$(printf '\\x%02x\\x%02x' "$byte1" "$byte2")" >> "$output_file"
@@ -47,7 +47,7 @@ process_store() {
   fi
   # bitwise operations for addition
   local store_value byte1 byte2
-  (( store_value = ( 1 << 10 ) | ( register << 8 ) | value ))
+  (( store_value = ( 2 << 10 ) | ( register << 8 ) | value ))
   (( byte1 = ( store_value >> 8 ) & 0xFF ))
   (( byte2 = ( store_value & 0xFF )))
   printf "$(printf '\\x%02x\\x%02x' "$byte1" "$byte2")" >> "$output_file"
@@ -68,7 +68,7 @@ process_add() {
   fi
   # bitwise operations for addition
   local summation_value byte1 byte2
-  (( summation_value = ( 2 << 10 ) | ( register << 8 ) | value ))
+  (( summation_value = ( 3 << 10 ) | ( register << 8 ) | value ))
   (( byte1 = ( summation_value >> 8 ) & 0xFF ))
   (( byte2 = ( summation_value & 0xFF )))
   printf "$(printf '\\x%02x\\x%02x' "$byte1" "$byte2")" >> "$output_file"
@@ -89,7 +89,7 @@ process_sub() {
   fi
   # bitwise operations for subtraction
   local subtraction_value byte1 byte2
-  (( subtraction_value = ( 3 << 10 ) | ( register << 8 ) | value ))
+  (( subtraction_value = ( 4 << 10 ) | ( register << 8 ) | value ))
   (( byte1 = ( subtraction_value >> 8 ) & 0xFF ))
   (( byte2 = ( subtraction_value & 0xFF )))
   printf "$(printf '\\x%02x\\x%02x' "$byte1" "$byte2")" >> "$output_file"
@@ -128,17 +128,17 @@ if [[ $# -gt 1 ]]; then
 fi
 # checks whether file in question exists in directory
 if [[ ! -f "$1" ]]; then
-  echo "usage: input is not a file or does not exist"
+  echo "usage: input is not a file or it does not exist"
   exit 1
 fi
 # checks whether file in question is a .vsc file
 if [[ "$1" != *.vsc ]]; then
-  echo "usage: input does not have the extension.vsc"
+  echo "usage: input does not have the extension .vsc"
   exit 1
 fi
 # check whether the file in question is empty
 if [[ ! -s "$1" ]]; then
-  echo "usage: the file is empty no.bin file is produced"
+  echo "usage: the file is empty - no .bin file is produced"
   exit 1
 fi
 
@@ -168,7 +168,7 @@ if [[ "$line1" == 0 ]]; then
     # inserts "QUIT,0,0" into output_file
     process_quit "0" "0"
     echo "It is a QUIT program"
-    echo "The content of the bin file is"
+    echo "The content of the .bin file is"
     xxd -p -c 1 "$output_file"
   else
     echo "Error: Invalid 0-program."
@@ -210,7 +210,7 @@ elif [[ "$line1" == 2 ]]; then
         esac
       done
       echo "It is an ADD/SUB program"
-      echo "The content of the bin file is"
+      echo "The content of the .bin file is"
       xxd -p -c 1 "$output_file"
     fi
   else
