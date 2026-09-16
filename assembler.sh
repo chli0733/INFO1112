@@ -118,23 +118,27 @@ process_print() {
 
 
 # checks whether something was inserted in assembler, else return error
-if [[ $# -ne 1 ]]; then
-  echo "Usage: $0 <filename.vsc>."
+if [[ $# -eq 0 ]]; then
+  echo "usage: no argument is provided"
+  exit 1
+fi
+if [[ $# -gt 1 ]]; then
+  echo "usage: more than one arguments are provided"
   exit 1
 fi
 # checks whether file in question exists in directory
 if [[ ! -f "$1" ]]; then
-  echo "Error: File '$1' does not exist."
+  echo "usage: input is not a file or does not exist"
   exit 1
 fi
 # checks whether file in question is a .vsc file
 if [[ "$1" != *.vsc ]]; then
-  echo "Error: File '$1' does not have a .vsc extension."
+  echo "usage: input does not have the extension.vsc"
   exit 1
 fi
 # check whether the file in question is empty
 if [[ ! -s "$1" ]]; then
-  echo "Error: File '$1' is empty. No .bin file has been generated."
+  echo "usage: the file is empty no.bin file is produced"
   exit 1
 fi
 
@@ -163,6 +167,9 @@ if [[ "$line1" == 0 ]]; then
     > "$output_file"
     # inserts "QUIT,0,0" into output_file
     process_quit "0" "0"
+    echo "It is a QUIT program"
+    echo "The content of the bin file is"
+    xxd -p -c 1 "$output_file"
   else
     echo "Error: Invalid 0-program."
     exit 1
@@ -202,6 +209,9 @@ elif [[ "$line1" == 2 ]]; then
           ;;
         esac
       done
+      echo "It is an ADD/SUB program"
+      echo "The content of the bin file is"
+      xxd -p -c 1 "$output_file"
     fi
   else
     echo "Error: Lines 2 and 3 must be integers"
