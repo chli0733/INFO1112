@@ -1,3 +1,5 @@
+!/bin/env bash
+
 # the function to do the instruction "quit"
 process_quit() {
   register="$1"
@@ -141,6 +143,9 @@ if [[ ! -s "$1" ]]; then
   echo "usage: the file is empty - no .bin file is produced"
   exit 1
 fi
+
+# removes old output_file just in case
+rm -f "$output_file"
 
 # reading instructions from .vsc file
 lines=()
