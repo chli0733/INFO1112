@@ -38,8 +38,18 @@ process_quit() {
     echo "Error: QUIT instruction must contain register - 0 and value - 0."
     exit 1
   fi
-
-  printf "$(printf '\\x20\\x00')" >> "$output_file"
+  # conversions to binary using helper functions
+  local binary_register=($register_to_binary "$register")
+  local binary_value=($decimal_to_binary "$value")
+  
+  # bitwise operations for addition
+  local quit_value byte1 byte2
+  # combines binary and opcode (1 << 10) into 1 variable
+  (( quit_value = ( 8 << 10 ) | ( 2#$binary_register << 8 ) | 2#binary_value ))
+  # splits the binary into 2 bytes (upper and lower), where 0xFF used to confirm lowest 8 bits remain
+  (( byte1 = ( quit_value >> 8 ) & 0xFF ))
+  (( byte2 = ( quit_value & 0xFF )))
+  printf "$(printf '\\x%02x\\x%02x' "$byte1" "$byte2")" >> "$output_file"
 }
 # the function to do the instruction "load"
 process_load() {
@@ -55,9 +65,15 @@ process_load() {
     echo "Error: LOAD instruction must contain integer between 0 and 128."
     exit 1
   fi
+  # conversions to binary using helper functions
+  local binary_register=($register_to_binary "$register")
+  local binary_value=($decimal_to_binary "$value")
+  
   # bitwise operations for addition
   local load_value byte1 byte2
-  (( load_value = ( 1 << 10 ) | ( register << 8 ) | value ))
+  # combines binary and opcode (1 << 10) into 1 variable
+  (( load_value = ( 1 << 10 ) | ( 2#$binary_register << 8 ) | 2#binary_value ))
+  # splits the binary into 2 bytes (upper and lower), where 0xFF used to confirm lowest 8 bits remain
   (( byte1 = ( load_value >> 8 ) & 0xFF ))
   (( byte2 = ( load_value & 0xFF )))
   printf "$(printf '\\x%02x\\x%02x' "$byte1" "$byte2")" >> "$output_file"
@@ -76,9 +92,15 @@ process_store() {
     echo "Error: STORE instruction must contain integer between 0 and 128."
     exit 1
   fi
-  # bitwise operations for addition
+  # conversions to binary using helper functions
+  local binary_register=($register_to_binary "$register")
+  local binary_value=($decimal_to_binary "$value")
+
+  # bitwise operations for store
   local store_value byte1 byte2
-  (( store_value = ( 2 << 10 ) | ( register << 8 ) | value ))
+  # combines binary and opcode (2 << 10) into 1 variable
+  (( load_value = ( 2 << 10 ) | ( 2#$binary_register << 8 ) | 2#binary_value ))
+  # splits the binary into 2 bytes (upper and lower), where 0xFF used to confirm lowest 8 bits remain
   (( byte1 = ( store_value >> 8 ) & 0xFF ))
   (( byte2 = ( store_value & 0xFF )))
   printf "$(printf '\\x%02x\\x%02x' "$byte1" "$byte2")" >> "$output_file"
@@ -97,9 +119,15 @@ process_add() {
     echo "Error: ADD instruction must contain integer between 0 and 128."
     exit 1
   fi
+  # conversions to binary using helper functions
+  local binary_register=($register_to_binary "$register")
+  local binary_value=($decimal_to_binary "$value")
+
   # bitwise operations for addition
   local summation_value byte1 byte2
-  (( summation_value = ( 3 << 10 ) | ( register << 8 ) | value ))
+  # combines binary and opcode (3 << 10) into 1 variable
+  (( summation_value = ( 3 << 10 ) | ( 2#$binary_register << 8 ) | 2#binary_value ))
+  # splits the binary into 2 bytes (upper and lower), where 0xFF used to confirm lowest 8 bits remain
   (( byte1 = ( summation_value >> 8 ) & 0xFF ))
   (( byte2 = ( summation_value & 0xFF )))
   printf "$(printf '\\x%02x\\x%02x' "$byte1" "$byte2")" >> "$output_file"
@@ -118,9 +146,15 @@ process_sub() {
     echo "Error: SUB instruction must contain integer between 0 and 128."
     exit 1
   fi
+  # conversions to binary using helper functions
+  local binary_register=($register_to_binary "$register")
+  local binary_value=($decimal_to_binary "$value")
+  
   # bitwise operations for subtraction
   local subtraction_value byte1 byte2
-  (( subtraction_value = ( 4 << 10 ) | ( register << 8 ) | value ))
+  # combines binary and opcode (4 << 10) into 1 variable
+  (( subtraction_value = ( 4 << 10 ) | ( 2#$binary_register << 8 ) | 2#binary_value ))
+  # splits the binary into 2 bytes (upper and lower), where 0xFF used to confirm lowest 8 bits remain
   (( byte1 = ( subtraction_value >> 8 ) & 0xFF ))
   (( byte2 = ( subtraction_value & 0xFF )))
   printf "$(printf '\\x%02x\\x%02x' "$byte1" "$byte2")" >> "$output_file"
@@ -139,9 +173,15 @@ process_print() {
     echo "Error: PRINT instruction must contain integer between 0 and 128."
     exit 1
   fi
+  # conversions to binary using helper functions
+  local binary_register=($register_to_binary "$register")
+  local binary_value=($decimal_to_binary "$value")
+  
   # bitwise operations for subtraction
   local print_value byte1 byte2
-  (( print_value = ( 9 << 10 ) | ( register << 8 ) | value ))
+  # combines binary and opcode (9 << 10) into 1 variable
+  (( print_value = ( 9 << 10 ) | ( 2#$binary_register << 8 ) | 2#$binary_value ))
+  # splits the binary into 2 bytes (upper and lower), where 0xFF used to confirm lowest 8 bits remain
   (( byte1 = ( print_value >> 8 ) & 0xFF ))
   (( byte2 = ( print_value & 0xFF )))
   printf "$(printf '\\x%02x\\x%02x' "$byte1" "$byte2")" >> "$output_file"
