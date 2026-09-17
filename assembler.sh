@@ -1,5 +1,34 @@
 #!/bin/bash
 
+#helper function - decimal to binary
+decimal_to_binary() {
+  local num=$1
+  local binary=""
+  local temp=$num
+  for weight in 128 64 32 16 8 4 2 1; do
+    if (( $temp >= $weight )); then
+      bit=1
+      temp=$(($temp - $weight))
+    else
+      bit=0
+    fi
+    binary="$binary$bit"
+  done
+}
+# helper function - register to binary
+register_to_binary() {
+  local register=$1
+  if [ "$register" -eq 0 ]; then
+    echo "00"
+  elif [ "$register" -eq 1]; then
+    echo "01"
+  elif [ "$register" -eq 2]; then
+    echo "10"
+  else
+    echo "11"
+  fi
+}
+
 # the function to do the instruction "quit"
 process_quit() {
   register="$1"
