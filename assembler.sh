@@ -14,15 +14,16 @@ decimal_to_binary() {
     fi
     binary="$binary$bit"
   done
+  echo "$binary"
 }
 # helper function - register to binary
 register_to_binary() {
   local register=$1
   if [ "$register" -eq 0 ]; then
     echo "00"
-  elif [ "$register" -eq 1]; then
+  elif [ "$register" -eq 1 ]; then
     echo "01"
-  elif [ "$register" -eq 2]; then
+  elif [ "$register" -eq 2 ]; then
     echo "10"
   else
     echo "11"
@@ -39,17 +40,17 @@ process_quit() {
     exit 1
   fi
   # conversions to binary using helper functions
-  local binary_register=($register_to_binary "$register")
-  local binary_value=($decimal_to_binary "$value")
+  local binary_register=$(register_to_binary "$register")
+  local binary_value=$(decimal_to_binary "$value")
   
   # bitwise operations for addition
   local quit_value byte1 byte2
   # combines binary and opcode (1 << 10) into 1 variable
-  (( quit_value = ( 8 << 10 ) | ( 2#$binary_register << 8 ) | 2#binary_value ))
+  (( quit_value = ( 8 << 10 ) | ( 2#$binary_register << 8 ) | 2#$binary_value ))
   # splits the binary into 2 bytes (upper and lower), where 0xFF used to confirm lowest 8 bits remain
   (( byte1 = ( quit_value >> 8 ) & 0xFF ))
   (( byte2 = ( quit_value & 0xFF )))
-  printf "$(printf '\\x%02x\\x%02x' "$byte1" "$byte2")" >> "$output_file"
+  printf '\x%02x\x%02x' "$byte1" "$byte2" >> "$output_file"
 }
 # the function to do the instruction "load"
 process_load() {
@@ -66,17 +67,17 @@ process_load() {
     exit 1
   fi
   # conversions to binary using helper functions
-  local binary_register=($register_to_binary "$register")
-  local binary_value=($decimal_to_binary "$value")
+  local binary_register=$(register_to_binary "$register")
+  local binary_value=$(decimal_to_binary "$value")
   
   # bitwise operations for addition
   local load_value byte1 byte2
   # combines binary and opcode (1 << 10) into 1 variable
-  (( load_value = ( 1 << 10 ) | ( 2#$binary_register << 8 ) | 2#binary_value ))
+  (( load_value = ( 1 << 10 ) | ( 2#$binary_register << 8 ) | 2#$binary_value ))
   # splits the binary into 2 bytes (upper and lower), where 0xFF used to confirm lowest 8 bits remain
   (( byte1 = ( load_value >> 8 ) & 0xFF ))
   (( byte2 = ( load_value & 0xFF )))
-  printf "$(printf '\\x%02x\\x%02x' "$byte1" "$byte2")" >> "$output_file"
+  printf '\x%02x\x%02x' "$byte1" "$byte2" >> "$output_file"
 }
 # the function to do the instruction "store"
 process_store() {
@@ -93,17 +94,17 @@ process_store() {
     exit 1
   fi
   # conversions to binary using helper functions
-  local binary_register=($register_to_binary "$register")
-  local binary_value=($decimal_to_binary "$value")
+  local binary_register=$(register_to_binary "$register")
+  local binary_value=$(decimal_to_binary "$value")
 
   # bitwise operations for store
   local store_value byte1 byte2
   # combines binary and opcode (2 << 10) into 1 variable
-  (( load_value = ( 2 << 10 ) | ( 2#$binary_register << 8 ) | 2#binary_value ))
+  (( store_value = ( 2 << 10 ) | ( 2#$binary_register << 8 ) | 2#$binary_value ))
   # splits the binary into 2 bytes (upper and lower), where 0xFF used to confirm lowest 8 bits remain
   (( byte1 = ( store_value >> 8 ) & 0xFF ))
   (( byte2 = ( store_value & 0xFF )))
-  printf "$(printf '\\x%02x\\x%02x' "$byte1" "$byte2")" >> "$output_file"
+  printf '\x%02x\x%02x' "$byte1" "$byte2" >> "$output_file"
 }
 # the function to do the instruction "add"
 process_add() {
@@ -120,17 +121,17 @@ process_add() {
     exit 1
   fi
   # conversions to binary using helper functions
-  local binary_register=($register_to_binary "$register")
-  local binary_value=($decimal_to_binary "$value")
+  local binary_register=$(register_to_binary "$register")
+  local binary_value=$(decimal_to_binary "$value")
 
   # bitwise operations for addition
   local summation_value byte1 byte2
   # combines binary and opcode (3 << 10) into 1 variable
-  (( summation_value = ( 3 << 10 ) | ( 2#$binary_register << 8 ) | 2#binary_value ))
+  (( summation_value = ( 3 << 10 ) | ( 2#$binary_register << 8 ) | 2#$binary_value ))
   # splits the binary into 2 bytes (upper and lower), where 0xFF used to confirm lowest 8 bits remain
   (( byte1 = ( summation_value >> 8 ) & 0xFF ))
   (( byte2 = ( summation_value & 0xFF )))
-  printf "$(printf '\\x%02x\\x%02x' "$byte1" "$byte2")" >> "$output_file"
+  printf '\x%02x\x%02x' "$byte1" "$byte2" >> "$output_file"
 }
 # the function to do the instruction "sub"
 process_sub() {
@@ -147,17 +148,17 @@ process_sub() {
     exit 1
   fi
   # conversions to binary using helper functions
-  local binary_register=($register_to_binary "$register")
-  local binary_value=($decimal_to_binary "$value")
+  local binary_register=$(register_to_binary "$register")
+  local binary_value=$(decimal_to_binary "$value")
   
   # bitwise operations for subtraction
   local subtraction_value byte1 byte2
   # combines binary and opcode (4 << 10) into 1 variable
-  (( subtraction_value = ( 4 << 10 ) | ( 2#$binary_register << 8 ) | 2#binary_value ))
+  (( subtraction_value = ( 4 << 10 ) | ( 2#$binary_register << 8 ) | 2#$binary_value ))
   # splits the binary into 2 bytes (upper and lower), where 0xFF used to confirm lowest 8 bits remain
   (( byte1 = ( subtraction_value >> 8 ) & 0xFF ))
   (( byte2 = ( subtraction_value & 0xFF )))
-  printf "$(printf '\\x%02x\\x%02x' "$byte1" "$byte2")" >> "$output_file"
+  printf '\x%02x\x%02x' "$byte1" "$byte2" >> "$output_file"
 }
 # the function to do the instruction "print"
 process_print() {
@@ -174,8 +175,8 @@ process_print() {
     exit 1
   fi
   # conversions to binary using helper functions
-  local binary_register=($register_to_binary "$register")
-  local binary_value=($decimal_to_binary "$value")
+  local binary_register=$(register_to_binary "$register")
+  local binary_value=$(decimal_to_binary "$value")
   
   # bitwise operations for subtraction
   local print_value byte1 byte2
@@ -184,7 +185,7 @@ process_print() {
   # splits the binary into 2 bytes (upper and lower), where 0xFF used to confirm lowest 8 bits remain
   (( byte1 = ( print_value >> 8 ) & 0xFF ))
   (( byte2 = ( print_value & 0xFF )))
-  printf "$(printf '\\x%02x\\x%02x' "$byte1" "$byte2")" >> "$output_file"
+  printf '\x%02x\x%02x' "$byte1" "$byte2" >> "$output_file"
 }
 
 
@@ -206,15 +207,12 @@ fi
 if [[ "$1" != *.vsc ]]; then
   echo "usage: input does not have the extension .vsc"
   exit 1
-fi
+f
 # check whether the file in question is empty
 if [[ ! -s "$1" ]]; then
   echo "usage: the file is empty - no .bin file is produced"
   exit 1
 fi
-
-# removes old output_file just in case
-rm -f "$output_file"
 
 # reading instructions from .vsc file
 lines=()
@@ -264,7 +262,13 @@ elif [[ "$line1" == 2 ]]; then
       # creates a .bin file with name of the .vsc file
       output_file="${1%.vsc}.bin"
       # converts values into hex bytes
-      printf "$(printf '\\x%02x\\x%02x' "${lines[1]}" "${lines[2]}")" > "$output_file"
+      header1_binary=$(decimal_to_binary "$value1")
+      header2_binary=$(decimal_to_binary "$value2")
+      header_value=$(( (2#header1_binary << 8) | 2#header2_binary ))
+      byte1=byte1=$(( (header_val >> 8) & 0xFF ))
+      byte2=$(( header_val & 0xFF ))
+      printf '\x%02x\x%02x' "$byte1" "$byte2" > "$output_file"
+      
       # processes instructions
       for ((i=3; i<${#lines[@]}; i++)); do
         IFS=',' read -r instruction register value <<< "${lines[$i]}"
