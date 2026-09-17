@@ -248,6 +248,19 @@ if [[ "$line1" == 0 ]]; then
   fi
 elif [[ "$line1" == 2 ]]; then
   # 2-program check
+  # check 1 -- check satisfactory of minimum lines
+  if [[ "${#lines[@]}" -lt 3 ]]; then
+    echo "Error: 2-program must contain at least 3 lines"
+    exit 1
+  fi
+  # check 2 -- check if last line has QUIT,0,0
+  last_line_index=$(( ${#lines[@]} - 1 ))
+  if [[ "${lines[$last_line_index]}" != "QUIT,0,0" ]]; then
+    echo "Error: Program must end in 'QUIT,0,0'"
+    exit 1
+  fi
+
+  # set up
   value1="${lines[1]}"
   value2="${lines[2]}"
   if [[ "$value1" =~ ^[0-9]+$ ]] && [[ "$value2" =~ ^[0-9]+$ ]]; then 
@@ -269,8 +282,25 @@ elif [[ "$line1" == 2 ]]; then
       byte2=$(( header_value & 0xFF ))
       printf "%b" "$(printf '\\x%02x\\x%02x' "$byte1" "$byte2")" > "$output_file"
 
+      # instruction counter -- used for program line limits
+      instruction_counter=0
+
       # processes instructions
       for ((i=3; i<${#lines[@]}; i++)); do
+        current_line="${lines[i]}"
+        (( instruction_counter++ ))
+        # error if instruction counter > 100
+        if (( instruction_counter > 100 )); then
+          echo "Error: Program exceeds maximum limit of 100 instructions"
+          rm -f "$output_file"
+          exit 1
+        fi
+        # error if character length > 11
+        if [[ ${#current_line} -gt 11 ]]; then
+          echo "Error: Instruction line $((i+1)) exceeds the character limit"
+          exit 1
+        fi
+        
         IFS=',' read -r instruction register value <<< "${lines[$i]}"
         case "$instruction" in
           "LOAD") process_load "$register" "$value" ;;
@@ -287,6 +317,7 @@ elif [[ "$line1" == 2 ]]; then
           ;;
         esac
       done
+      
       echo "It is an ADD/SUB program"
       echo "The content of the .bin file is"
       xxd -p -c 1 "$output_file"
