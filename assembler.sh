@@ -50,7 +50,7 @@ process_quit() {
   # splits the binary into 2 bytes (upper and lower), where 0xFF used to confirm lowest 8 bits remain
   (( byte1 = ( quit_value >> 8 ) & 0xFF ))
   (( byte2 = ( quit_value & 0xFF )))
-  printf '\x%02x\x%02x' "$byte1" "$byte2" >> "$output_file"
+  printf "%b" "$(printf '\\x%02x\\x%02x' "$byte1" "$byte2")" >> "$output_file"
 }
 # the function to do the instruction "load"
 process_load() {
@@ -62,8 +62,8 @@ process_load() {
     exit 1
   fi
   # checker (whether value is valid)
-  if [[ ! "$value" =~ ^[0-9]+$ ]] || (( value < 0 || value > 128 )); then
-    echo "Error: LOAD instruction must contain integer between 0 and 128."
+  if [[ ! "$value" =~ ^[0-9]+$ ]] || (( value < 0 || value > 255 )); then
+    echo "Error: LOAD instruction must contain integer between 0 and 255."
     exit 1
   fi
   # conversions to binary using helper functions
@@ -77,7 +77,7 @@ process_load() {
   # splits the binary into 2 bytes (upper and lower), where 0xFF used to confirm lowest 8 bits remain
   (( byte1 = ( load_value >> 8 ) & 0xFF ))
   (( byte2 = ( load_value & 0xFF )))
-  printf '\x%02x\x%02x' "$byte1" "$byte2" >> "$output_file"
+  printf "%b" "$(printf '\\x%02x\\x%02x' "$byte1" "$byte2")" >> "$output_file"
 }
 # the function to do the instruction "store"
 process_store() {
@@ -89,8 +89,8 @@ process_store() {
     exit 1
   fi
   # checker (whether value is valid)
-  if [[ ! "$value" =~ ^[0-9]+$ ]] || (( value < 0 || value > 128 )); then
-    echo "Error: STORE instruction must contain integer between 0 and 128."
+  if [[ ! "$value" =~ ^[0-9]+$ ]] || (( value < 0 || value > 255 )); then
+    echo "Error: STORE instruction must contain integer between 0 and 255."
     exit 1
   fi
   # conversions to binary using helper functions
@@ -104,7 +104,7 @@ process_store() {
   # splits the binary into 2 bytes (upper and lower), where 0xFF used to confirm lowest 8 bits remain
   (( byte1 = ( store_value >> 8 ) & 0xFF ))
   (( byte2 = ( store_value & 0xFF )))
-  printf '\x%02x\x%02x' "$byte1" "$byte2" >> "$output_file"
+  printf "%b" "$(printf '\\x%02x\\x%02x' "$byte1" "$byte2")" >> "$output_file"
 }
 # the function to do the instruction "add"
 process_add() {
@@ -116,8 +116,8 @@ process_add() {
     exit 1
   fi
   # checker (whether value is valid)
-  if [[ ! "$value" =~ ^[0-9]+$ ]] || (( value < 0 || value > 128 )); then
-    echo "Error: ADD instruction must contain integer between 0 and 128."
+  if [[ ! "$value" =~ ^[0-9]+$ ]] || (( value < 0 || value > 255 )); then
+    echo "Error: ADD instruction must contain integer between 0 and 255."
     exit 1
   fi
   # conversions to binary using helper functions
@@ -131,7 +131,7 @@ process_add() {
   # splits the binary into 2 bytes (upper and lower), where 0xFF used to confirm lowest 8 bits remain
   (( byte1 = ( summation_value >> 8 ) & 0xFF ))
   (( byte2 = ( summation_value & 0xFF )))
-  printf '\x%02x\x%02x' "$byte1" "$byte2" >> "$output_file"
+  printf "%b" "$(printf '\\x%02x\\x%02x' "$byte1" "$byte2")" >> "$output_file"
 }
 # the function to do the instruction "sub"
 process_sub() {
@@ -143,8 +143,8 @@ process_sub() {
     exit 1
   fi
   # checker (whether value is valid)
-  if [[ ! "$value" =~ ^[0-9]+$ ]] || (( value < 0 || value > 128 )); then
-    echo "Error: SUB instruction must contain integer between 0 and 128."
+  if [[ ! "$value" =~ ^[0-9]+$ ]] || (( value < 0 || value > 255 )); then
+    echo "Error: SUB instruction must contain integer between 0 and 255."
     exit 1
   fi
   # conversions to binary using helper functions
@@ -158,7 +158,7 @@ process_sub() {
   # splits the binary into 2 bytes (upper and lower), where 0xFF used to confirm lowest 8 bits remain
   (( byte1 = ( subtraction_value >> 8 ) & 0xFF ))
   (( byte2 = ( subtraction_value & 0xFF )))
-  printf '\x%02x\x%02x' "$byte1" "$byte2" >> "$output_file"
+  printf "%b" "$(printf '\\x%02x\\x%02x' "$byte1" "$byte2")" >> "$output_file"
 }
 # the function to do the instruction "print"
 process_print() {
@@ -170,8 +170,8 @@ process_print() {
     exit 1
   fi
   # checker (whether value is valid)
-  if [[ ! "$value" =~ ^[0-9]+$ ]] || (( value < 0 || value > 128 )); then
-    echo "Error: PRINT instruction must contain integer between 0 and 128."
+  if [[ ! "$value" =~ ^[0-9]+$ ]] || (( value < 0 || value > 255 )); then
+    echo "Error: PRINT instruction must contain integer between 0 and 255."
     exit 1
   fi
   # conversions to binary using helper functions
@@ -185,7 +185,7 @@ process_print() {
   # splits the binary into 2 bytes (upper and lower), where 0xFF used to confirm lowest 8 bits remain
   (( byte1 = ( print_value >> 8 ) & 0xFF ))
   (( byte2 = ( print_value & 0xFF )))
-  printf '\x%02x\x%02x' "$byte1" "$byte2" >> "$output_file"
+  printf "%b" "$(printf '\\x%02x\\x%02x' "$byte1" "$byte2")" >> "$output_file"
 }
 
 
@@ -251,11 +251,11 @@ elif [[ "$line1" == 2 ]]; then
   value1="${lines[1]}"
   value2="${lines[2]}"
   if [[ "$value1" =~ ^[0-9]+$ ]] && [[ "$value2" =~ ^[0-9]+$ ]]; then 
-    if (( value1 < 0 || value1 > 128 )); then
-      echo "Error: value 1 is an invalid number. Please put a number between 0 and 128."
+    if (( value1 < 0 || value1 > 255 )); then
+      echo "Error: value 1 is an invalid number. Please put a number between 0 and 255."
       exit 1
-    elif (( value2 < 0 || value2 > 128 )); then
-      echo "Error: value 2 is an invalid number. Please put a number between 0 and 128."
+    elif (( value2 < 0 || value2 > 255 )); then
+      echo "Error: value 2 is an invalid number. Please put a number between 0 and 255."
       exit 1
     else
       # proceed with 2-program
@@ -264,7 +264,7 @@ elif [[ "$line1" == 2 ]]; then
       # converts values into hex bytes
       header1_binary=$(decimal_to_binary "$value1")
       header2_binary=$(decimal_to_binary "$value2")
-      header_value=$(( (2#header1_binary << 8) | 2#header2_binary ))
+      header_value=$(( (2#$header1_binary << 8) | 2#$header2_binary ))
       byte1=$(( (header_value >> 8) & 0xFF ))
       byte2=$(( header_value & 0xFF ))
       printf '\x%02x\x%02x' "$byte1" "$byte2" > "$output_file"
