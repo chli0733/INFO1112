@@ -207,7 +207,7 @@ fi
 if [[ "$1" != *.vsc ]]; then
   echo "usage: input does not have the extension .vsc"
   exit 1
-f
+fi
 # check whether the file in question is empty
 if [[ ! -s "$1" ]]; then
   echo "usage: the file is empty - no .bin file is produced"
@@ -265,8 +265,8 @@ elif [[ "$line1" == 2 ]]; then
       header1_binary=$(decimal_to_binary "$value1")
       header2_binary=$(decimal_to_binary "$value2")
       header_value=$(( (2#header1_binary << 8) | 2#header2_binary ))
-      byte1=byte1=$(( (header_val >> 8) & 0xFF ))
-      byte2=$(( header_val & 0xFF ))
+      byte1=$(( (header_value >> 8) & 0xFF ))
+      byte2=$(( header_value & 0xFF ))
       printf '\x%02x\x%02x' "$byte1" "$byte2" > "$output_file"
       
       # processes instructions
