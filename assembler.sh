@@ -1,4 +1,4 @@
-!/bin/env bash
+#!/bin/bash
 
 # the function to do the instruction "quit"
 process_quit() {
