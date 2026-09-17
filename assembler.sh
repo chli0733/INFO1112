@@ -255,8 +255,8 @@ elif [[ "$line1" == 2 ]]; then
   fi
   # check 2 -- check if last line has QUIT,0,0
   last_line_index=$(( ${#lines[@]} - 1 ))
-  if [[ "${#lines[$last_line_index]}" != "QUIT,0,0" ]]; then
-    echo "Error: Program must end in "QUIT,0,0""
+  if [[ "${lines[$last_line_index]}" != "QUIT,0,0" ]]; then
+    echo "Error: Program must end in 'QUIT,0,0'"
     exit 1
   fi
 
@@ -287,16 +287,16 @@ elif [[ "$line1" == 2 ]]; then
 
       # processes instructions
       for ((i=3; i<${#lines[@]}; i++)); do
-        current_line="${#lines[i]}"
-        (( instruction_counter++ )
-        # error if instruction count > 100
-        if (( instruction_count > 100 )); then
+        current_line="${lines[i]}"
+        (( instruction_counter++ ))
+        # error if instruction counter > 100
+        if (( instruction_counter > 100 )); then
           echo "Error: Program exceeds maximum limit of 100 instructions"
           rm -f "$output_file"
           exit 1
         fi
         # error if character length > 11
-        if [[ ${#current_lines} -gt 11 ]]; then
+        if [[ ${#current_line} -gt 11 ]]; then
           echo "Error: Instruction line $((i+1)) exceeds the character limit"
           exit 1
         fi
