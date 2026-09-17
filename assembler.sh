@@ -267,8 +267,8 @@ elif [[ "$line1" == 2 ]]; then
       header_value=$(( (2#$header1_binary << 8) | 2#$header2_binary ))
       byte1=$(( (header_value >> 8) & 0xFF ))
       byte2=$(( header_value & 0xFF ))
-      printf '\x%02x\x%02x' "$byte1" "$byte2" > "$output_file"
-      
+      printf "%b" "$(printf '\\x%02x\\x%02x' "$byte1" "$byte2")" > "$output_file"
+
       # processes instructions
       for ((i=3; i<${#lines[@]}; i++)); do
         IFS=',' read -r instruction register value <<< "${lines[$i]}"
