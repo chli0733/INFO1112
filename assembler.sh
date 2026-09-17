@@ -269,8 +269,19 @@ elif [[ "$line1" == 2 ]]; then
       byte2=$(( header_value & 0xFF ))
       printf "%b" "$(printf '\\x%02x\\x%02x' "$byte1" "$byte2")" > "$output_file"
 
+      # instruction counter -- used for program line limits
+      instruction_counter=0
+
       # processes instructions
       for ((i=3; i<${#lines[@]}; i++)); do
+        (( instruction_counter++ )
+        # error if instruction count > 100
+        if (( instruction_count > 100 )); then
+          echo "Error: Program exceeds maximum limit of 100 instructions"
+          rm -f "$output_file"
+          exit 1
+        fi
+        
         IFS=',' read -r instruction register value <<< "${lines[$i]}"
         case "$instruction" in
           "LOAD") process_load "$register" "$value" ;;
@@ -287,6 +298,7 @@ elif [[ "$line1" == 2 ]]; then
           ;;
         esac
       done
+      
       echo "It is an ADD/SUB program"
       echo "The content of the .bin file is"
       xxd -p -c 1 "$output_file"
