@@ -50,7 +50,7 @@ process_quit() {
   # splits the binary into 2 bytes (upper and lower), where 0xFF used to confirm lowest 8 bits remain
   (( byte1 = ( quit_value >> 8 ) & 0xFF ))
   (( byte2 = ( quit_value & 0xFF )))
-  printf "%b" "$(printf '\\x%02x\\x%02x' "$byte1" "$byte2")" >> "$output_file"
+  printf "$(printf '\\x%02x\\x%02x' "$byte1" "$byte2")" >> "$output_file"
 }
 # the function to do the instruction "load"
 process_load() {
@@ -77,7 +77,7 @@ process_load() {
   # splits the binary into 2 bytes (upper and lower), where 0xFF used to confirm lowest 8 bits remain
   (( byte1 = ( load_value >> 8 ) & 0xFF ))
   (( byte2 = ( load_value & 0xFF )))
-  printf "%b" "$(printf '\\x%02x\\x%02x' "$byte1" "$byte2")" >> "$output_file"
+  printf "$(printf '\\x%02x\\x%02x' "$byte1" "$byte2")" >> "$output_file"
 }
 # the function to do the instruction "store"
 process_store() {
@@ -104,7 +104,7 @@ process_store() {
   # splits the binary into 2 bytes (upper and lower), where 0xFF used to confirm lowest 8 bits remain
   (( byte1 = ( store_value >> 8 ) & 0xFF ))
   (( byte2 = ( store_value & 0xFF )))
-  printf "%b" "$(printf '\\x%02x\\x%02x' "$byte1" "$byte2")" >> "$output_file"
+  printf "$(printf '\\x%02x\\x%02x' "$byte1" "$byte2")" >> "$output_file"
 }
 # the function to do the instruction "add"
 process_add() {
@@ -131,7 +131,7 @@ process_add() {
   # splits the binary into 2 bytes (upper and lower), where 0xFF used to confirm lowest 8 bits remain
   (( byte1 = ( summation_value >> 8 ) & 0xFF ))
   (( byte2 = ( summation_value & 0xFF )))
-  printf "%b" "$(printf '\\x%02x\\x%02x' "$byte1" "$byte2")" >> "$output_file"
+  printf "$(printf '\\x%02x\\x%02x' "$byte1" "$byte2")" >> "$output_file"
 }
 # the function to do the instruction "sub"
 process_sub() {
@@ -158,7 +158,7 @@ process_sub() {
   # splits the binary into 2 bytes (upper and lower), where 0xFF used to confirm lowest 8 bits remain
   (( byte1 = ( subtraction_value >> 8 ) & 0xFF ))
   (( byte2 = ( subtraction_value & 0xFF )))
-  printf "%b" "$(printf '\\x%02x\\x%02x' "$byte1" "$byte2")" >> "$output_file"
+  printf "$(printf '\\x%02x\\x%02x' "$byte1" "$byte2")" >> "$output_file"
 }
 # the function to do the instruction "print"
 process_print() {
@@ -185,7 +185,7 @@ process_print() {
   # splits the binary into 2 bytes (upper and lower), where 0xFF used to confirm lowest 8 bits remain
   (( byte1 = ( print_value >> 8 ) & 0xFF ))
   (( byte2 = ( print_value & 0xFF )))
-  printf "%b" "$(printf '\\x%02x\\x%02x' "$byte1" "$byte2")" >> "$output_file"
+  printf "$(printf '\\x%02x\\x%02x' "$byte1" "$byte2")" >> "$output_file"
 }
 
 
@@ -240,6 +240,7 @@ if [[ "$line1" == 0 ]]; then
     # inserts "QUIT,0,0" into output_file
     process_quit "0" "0"
     echo "It is a QUIT program"
+    echo "--- ********** --- "
     echo "The content of the .bin file is"
     xxd -p -c 1 "$output_file"
   else
@@ -280,7 +281,7 @@ elif [[ "$line1" == 2 ]]; then
       header_value=$(( (2#$header1_binary << 8) | 2#$header2_binary ))
       byte1=$(( (header_value >> 8) & 0xFF ))
       byte2=$(( header_value & 0xFF ))
-      printf "%b" "$(printf '\\x%02x\\x%02x' "$byte1" "$byte2")" > "$output_file"
+      printf "$(printf '\\x%02x\\x%02x' "$byte1" "$byte2")" > "$output_file"
 
       # instruction counter -- used for program line limits
       instruction_counter=0
@@ -298,6 +299,7 @@ elif [[ "$line1" == 2 ]]; then
         # error if character length > 11
         if [[ ${#current_line} -gt 11 ]]; then
           echo "Error: Instruction line $((i+1)) exceeds the character limit"
+          rm -f "$output_file"
           exit 1
         fi
         
@@ -319,6 +321,7 @@ elif [[ "$line1" == 2 ]]; then
       done
       
       echo "It is an ADD/SUB program"
+      echo "--- ********** --- "
       echo "The content of the .bin file is"
       xxd -p -c 1 "$output_file"
     fi
