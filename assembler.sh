@@ -57,8 +57,8 @@ process_load() {
   register="$1"
   value="$2"
   # checker (whether register is valid)
-  if [[ "$register" != 0 && "$register" != 1 ]]; then
-    echo "Error: LOAD instruction must contain register of 0 or 1"
+  if [[ ! "$register" =~ ^[0-9]+$ ]] || (( register < 0 || register > 3 )); then
+    echo "Error: LOAD instruction must contain an integer register between 0 and 3"
     exit 1
   fi
   # checker (whether value is valid)
@@ -84,8 +84,8 @@ process_store() {
   register="$1"
   value="$2"
   # checker (whether register is valid)
-  if [[ "$register" != 0 && "$register" != 1 ]]; then
-    echo "Error: STORE instruction must contain register of 0 or 1"
+  if [[ ! "$register" =~ ^[0-9]+$ ]] || (( register < 0 || register > 3 )); then
+    echo "Error: STORE instruction must contain an integer register between 0 and 3"
     exit 1
   fi
   # checker (whether value is valid)
@@ -111,8 +111,8 @@ process_add() {
   register="$1"
   value="$2"
   # checker (whether register is valid)
-  if [[ "$register" != 0 && "$register" != 1 ]]; then
-    echo "Error: ADD instruction must contain register of 0 or 1"
+  if [[ ! "$register" =~ ^[0-9]+$ ]] || (( register < 0 || register > 3 )); then
+    echo "Error: ADD instruction must contain an integer register between 0 and 3"
     exit 1
   fi
   # checker (whether value is valid)
@@ -138,8 +138,8 @@ process_sub() {
   register="$1"
   value="$2"
   # checker (whether register is valid)
-  if [[ "$register" != 0 && "$register" != 1 ]]; then
-    echo "Error: SUB instruction must contain register of 0 or 1"
+  if [[ ! "$register" =~ ^[0-9]+$ ]] || (( register < 0 || register > 3 )); then
+    echo "Error: SUB instruction must contain an integer register between 0 and 3"
     exit 1
   fi
   # checker (whether value is valid)
@@ -165,8 +165,8 @@ process_print() {
   register="$1"
   value="$2"
   # checker (whether register is valid)
-  if [[ "$register" != 0 && "$register" != 1 ]]; then
-    echo "Error: PRINT instruction must contain register of 0 or 1"
+  if [[ ! "$register" =~ ^[0-9]+$ ]] || (( register < 0 || register > 3 )); then
+    echo "Error: PRINT instruction must contain an integer register between 0 and 3"
     exit 1
   fi
   # checker (whether value is valid)
