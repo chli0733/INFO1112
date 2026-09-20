@@ -290,8 +290,8 @@ elif [[ "$line1" == 2 ]]; then
       for ((i=3; i<${#lines[@]}; i++)); do
         current_line="${lines[i]}"
         (( instruction_counter++ ))
-        # error if instruction counter > 100
-        if (( instruction_counter > 100 )); then
+        # error if instruction counter > 103
+        if (( instruction_counter > 103 )); then
           echo "Error: Program exceeds maximum limit of 100 instructions"
           rm -f "$output_file"
           exit 1
